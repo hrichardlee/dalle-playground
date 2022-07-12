@@ -1,3 +1,6 @@
+-f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+jax==0.3.14
+jaxlib==0.3.14+cuda11.cudnn82
 Flask==2.1.0
 Flask-Cors==3.0.9
 Flask-RESTful==0.3.8
