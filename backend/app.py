@@ -21,6 +21,8 @@ dalle_model = None
 parser = argparse.ArgumentParser(description = "A DALL-E app to turn your textual prompts into visionary delights")
 parser.add_argument("--port", type=int, default=8000, help = "backend port")
 parser.add_argument("--model_version", type = parse_arg_dalle_version, default = ModelSize.MINI, help = "Mini, Mega, or Mega_full")
+parser.add_argument("--s3_bucket", type = str, help = "An S3 bucket that has been prepared with the cache_in_s3.py script")
+parser.add_argument("--s3_bucket_region", type = str, help = "The region for the specified s3 bucket")
 parser.add_argument("--save_to_disk", type = parse_arg_boolean, default = False, help = "Should save generated images to disk")
 parser.add_argument("--img_format", type = str.lower, default = "JPEG", help = "Generated images format", choices=['jpeg', 'png'])
 parser.add_argument("--output_dir", type = str, default = DEFAULT_IMG_OUTPUT_DIR, help = "Customer directory for generated images")
@@ -62,7 +64,7 @@ def health_check():
 
 
 with app.app_context():
-    dalle_model = DalleModel(args.model_version)
+    dalle_model = DalleModel(args.model_version, args.s3_bucket, args.s3_bucket_region)
     dalle_model.generate_images("warm-up", 1)
     print("--> DALL-E Server is up and running!")
     print(f"--> Model selected - DALL-E {args.model_version}")

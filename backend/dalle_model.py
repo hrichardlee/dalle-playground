@@ -1,6 +1,8 @@
 import os
 import random
 from functools import partial
+from typing import Optional
+from cache_in_s3 import download_pretrained_model_from_s3
 
 import jax
 import numpy as np
@@ -45,17 +47,20 @@ def p_decode(vqgan, indices, params):
 
 
 class DalleModel:
-    def __init__(self, model_version: ModelSize) -> None:
+    def __init__(self, model_version: ModelSize, s3_bucket: Optional[str], s3_bucket_region: Optional[str]) -> None:
         if model_version == ModelSize.MEGA_FULL:
             dalle_model = DALLE_MODEL_MEGA_FULL
-            dtype = jnp.float16
+            dtype = jnp.float32
         elif model_version == ModelSize.MEGA:
             dalle_model = DALLE_MODEL_MEGA
             dtype = jnp.float16
         else:
             dalle_model = DALLE_MODEL_MINI
             dtype = jnp.float32
-            
+        
+        if s3_bucket is not None:
+            # this will now be the path to the local copy of the pretrained model
+            dalle_model = download_pretrained_model_from_s3(str(model_version), s3_bucket, s3_bucket_region)
             
         # Load dalle-mini
         self.model, params = DalleBart.from_pretrained(
