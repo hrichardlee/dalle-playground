@@ -33,10 +33,10 @@ def download_pretrained_model_and_cache_in_s3(model_version: ModelSize, s3_bucke
 
 def download_pretrained_model_from_s3(model_version: str, s3_bucket: str, s3_bucket_region: str) -> str:
     s3 = boto3.client("s3", region_name=s3_bucket_region)
-    local_dir = os.path.join("/meadowrun/machine_cache", model_version)
+    local_dir = os.path.join("/var/meadowrun/machine_cache", model_version)
     os.makedirs(local_dir, exist_ok=True)
     for file in s3.list_objects(Bucket=s3_bucket)["Contents"]:
-        local_path = os.path.join("/meadowrun/machine_cache", file["Key"])
+        local_path = os.path.join("/var/meadowrun/machine_cache", file["Key"])
         if file["Key"].startswith(f"{model_version}/") and not os.path.exists(local_path):
             print(f"Downloading {file['Key']}")
             s3.download_file(s3_bucket, file["Key"], local_path)
